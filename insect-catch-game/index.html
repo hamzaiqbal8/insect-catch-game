@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="screen">
+        <h1>Catch The Insect</h1>
+        <button class="btn" id="start-btn">Play Game</button>
+      </div>
+  
+      <div class="screen">
+        <h1>What is your "favorite" insect?</h1>
+        <ul class="insects-list">
+          <li>
+            <button class="choose-insect-btn">
+              <p>Fly</p>
+              <img src="http://pngimg.com/uploads/fly/fly_PNG3946.png" alt="fly">
+            </button>
+          </li>
+          <li>
+            <button class="choose-insect-btn">
+              <p>Mosquito</p>
+              <img
+                 src="http://pngimg.com/uploads/mosquito/mosquito_PNG18175.png"
+                 alt="mosquito"
+                 />
+            </button>
+          </li>
+          <li>
+            <button class="choose-insect-btn">
+              <p>Spider</p>
+              <img
+                 src="http://pngimg.com/uploads/spider/spider_PNG12.png"
+                 alt="spider"
+                 />
+            </button>
+          </li>
+          <li>
+            <button class="choose-insect-btn">
+              <p>Roach</p>
+              <img
+                 src="http://pngimg.com/uploads/roach/roach_PNG12163.png"
+                 alt="roach"
+                 />
+            </button>
+          </li>
+        </ul>
+      </div>
+  
+      <div class="screen game-container" id="game-container">
+        <h3 id="time" class="time">Time: 00:00</h3>
+        <h3 id="score" class="score">Score: 0</h3>
+        <h5 id="message" class="message">
+          Are you annoyed yet? <br>
+          You are playing an impossible game!!
+        </h5>
+      </div>
+<script>
+    let screens = document.querySelectorAll('.screen');
+let choose_insect_btns = document.querySelectorAll('.choose-insect-btn');
+let start_btn = document.getElementById('start-btn')
+let game_container = document.getElementById('game-container')
+let timeEl = document.getElementById('time')
+let scoreEl = document.getElementById('score')
+let message = document.getElementById('message')
+let seconds = 0
+let score = 0
+let selected_insect = {}
+
+start_btn.addEventListener('click', () => screens[0].classList.add('up'))
+
+choose_insect_btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        let img = btn.querySelector('img')
+        let src = img.getAttribute('src')
+        let alt = img.getAttribute('alt')
+        selected_insect = { src, alt }
+        screens[1].classList.add('up')
+        setTimeout(createInsect, 1000)
+        startGame()
+    })
+})
+
+function startGame() {
+    setInterval(increaseTime, 1000)
+}
+
+function increaseTime() {
+    let m = Math.floor(seconds / 60)
+    let s = seconds % 60
+    m = m < 10 ? `0${m}` : m
+    s = s < 10 ? `0${s}` : s
+    timeEl.innerHTML = `Time: ${m}:${s}`
+    seconds++
+}
+
+function createInsect() {
+    let insect = document.createElement('div')
+    insect.classList.add('insect')
+    let { x, y } = getRandomLocation()
+    insect.style.top = `${y}px`
+    insect.style.left = `${x}px`
+    insect.innerHTML = `<img src="${selected_insect.src}" alt="${selected_insect.alt}" style="transform: rotate(${Math.random() * 360}deg)" />`
+
+    insect.addEventListener('click', catchInsect)
+
+    game_container.appendChild(insect)
+}
+
+function getRandomLocation() {
+    let width = window.innerWidth
+    let height = window.innerHeight
+    let x = Math.random() * (width - 200) + 100
+    let y = Math.random() * (height - 200) + 100
+    return { x, y }
+}
+
+function catchInsect() {
+    increaseScore()
+    this.classList.add('caught')
+    setTimeout(() => this.remove(), 2000)
+    addInsects()
+}
+
+function addInsects() {
+    setTimeout(createInsect, 1000)
+    setTimeout(createInsect, 1500)
+}
+
+function increaseScore() {
+    score++
+    if(score > 19) {
+        message.classList.add('visible')
+    }
+    scoreEl.innerHTML = `Score: ${score}`
+}
+</script>  
+</body>
+</html>
